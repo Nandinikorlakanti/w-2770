@@ -80,7 +80,7 @@ export function TaskInput({ onTaskCreate, useAI, onToggleAI }: TaskInputProps) {
             onCheckedChange={onToggleAI}
             className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-indigo-500 data-[state=checked]:to-purple-500"
           />
-          <Label htmlFor="ai-toggle" className="flex items-center space-x-2 text-sm font-medium cursor-pointer text-slate-800 dark:text-slate-200">
+          <Label htmlFor="ai-toggle" className="flex items-center space-x-2 text-sm font-medium cursor-pointer text-primary-light dark:text-primary-dark">
             {useAI ? <Zap className="h-4 w-4 text-purple-500" /> : <Sparkles className="h-4 w-4 text-indigo-500" />}
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               {useAI ? 'AI Processing' : 'Smart Processing'}
@@ -96,23 +96,23 @@ export function TaskInput({ onTaskCreate, useAI, onToggleAI }: TaskInputProps) {
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Describe your task naturally..."
-          className="min-h-[120px] text-base bg-gradient-to-br from-white/80 to-indigo-50/80 dark:from-slate-800/80 dark:to-slate-700/80 backdrop-blur-sm border-2 border-indigo-200/50 dark:border-slate-600/50 focus:border-gradient-to-r focus:from-indigo-400 focus:to-purple-400 rounded-2xl shadow-lg transition-all duration-300 resize-none placeholder:text-slate-500 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100"
+          className="min-h-[120px] text-base bg-gradient-to-br from-white/80 to-indigo-50/80 dark:from-slate-800/80 dark:to-slate-700/80 backdrop-blur-sm border-2 border-indigo-200/50 dark:border-slate-600/50 focus:border-gradient-to-r focus:from-indigo-400 focus:to-purple-400 rounded-2xl shadow-lg transition-all duration-300 resize-none placeholder:text-muted-light dark:placeholder:text-muted-dark input-text-light dark:input-text-dark"
           disabled={isLoading}
         />
         
         {/* Real-time Preview */}
         {preview && (
           <div className="absolute top-3 right-3 bg-gradient-to-br from-white/95 to-indigo-50/95 dark:from-slate-800/95 dark:to-slate-700/95 backdrop-blur-md rounded-xl p-3 border border-indigo-200/50 dark:border-slate-600/50 max-w-xs shadow-xl">
-            <div className="text-xs text-slate-600 dark:text-slate-400 mb-2 font-medium">Preview:</div>
+            <div className="text-xs text-secondary-light dark:text-secondary-dark mb-2 font-medium">Preview:</div>
             <div className="space-y-2">
-              <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{preview.name}</div>
+              <div className="text-sm font-semibold text-primary-light dark:text-primary-dark truncate">{preview.name}</div>
               {preview.assignee && (
-                <div className="text-xs text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                <div className="text-xs text-secondary-light dark:text-secondary-dark flex items-center gap-1">
                   <span className="text-indigo-500">👤</span> {preview.assignee}
                 </div>
               )}
               {preview.dueDate && (
-                <div className="text-xs text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                <div className="text-xs text-secondary-light dark:text-secondary-dark flex items-center gap-1">
                   <span className="text-purple-500">📅</span> {preview.dueDate.toLocaleDateString()}
                 </div>
               )}
@@ -149,8 +149,8 @@ export function TaskInput({ onTaskCreate, useAI, onToggleAI }: TaskInputProps) {
       </Button>
 
       {/* Keyboard Hint */}
-      <div className="text-center text-xs text-slate-600 dark:text-slate-400">
-        Press <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-700 rounded-lg text-xs font-mono text-slate-800 dark:text-slate-200">Cmd+Enter</kbd> to add task
+      <div className="text-center text-xs text-muted-light dark:text-muted-dark">
+        Press <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-700 rounded-lg text-xs font-mono text-primary-light dark:text-primary-dark">Cmd+Enter</kbd> to add task
       </div>
     </div>
   );

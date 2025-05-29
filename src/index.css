@@ -129,6 +129,40 @@
   .animate-glow {
     animation: glow 2s ease-in-out infinite alternate;
   }
+
+  /* Enhanced text colors for better visibility */
+  .text-primary-light {
+    color: #1a202c !important;
+  }
+
+  .text-secondary-light {
+    color: #2d3748 !important;
+  }
+
+  .text-muted-light {
+    color: #4a5568 !important;
+  }
+
+  .text-primary-dark {
+    color: #f7fafc !important;
+  }
+
+  .text-secondary-dark {
+    color: #e2e8f0 !important;
+  }
+
+  .text-muted-dark {
+    color: #cbd5e0 !important;
+  }
+
+  /* Input text color fix */
+  .input-text-light {
+    color: #1a202c !important;
+  }
+
+  .input-text-dark {
+    color: #f7fafc !important;
+  }
 }
 
 /* Custom scrollbar */
