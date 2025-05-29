@@ -47,41 +47,42 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 20% 98%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 210 20% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 263.4 70% 50.4%;
+
+    --sidebar-background: 224 71.4% 4.1%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 263.4 70% 50.4%;
+    --sidebar-primary-foreground: 210 20% 98%;
+    --sidebar-accent: 215 27.9% 16.9%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 215 27.9% 16.9%;
+    --sidebar-ring: 263.4 70% 50.4%;
   }
 }
 
@@ -91,7 +92,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-foreground font-inter min-h-screen;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   }
 }
@@ -102,29 +103,37 @@
   }
   
   .glassmorphism {
-    @apply backdrop-blur-md bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10;
+    @apply backdrop-blur-xl bg-white/20 dark:bg-slate-800/20 border border-white/30 dark:border-slate-600/30;
   }
   
   .task-card-hover {
-    @apply transition-all duration-200 ease-smooth hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-blue/10;
+    @apply transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/20;
   }
   
   .button-hover {
-    @apply transition-all duration-150 ease-smooth hover:scale-102;
+    @apply transition-all duration-200 ease-out hover:scale-105;
   }
   
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-offset-2 dark:focus:ring-offset-dark-bg;
+    @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800;
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-primary-blue to-secondary-blue bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
   }
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -132,17 +141,17 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #94A3B8;
-  border-radius: 3px;
+  background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: linear-gradient(to bottom, #4f46e5, #7c3aed);
 }
 
 /* Smooth transitions for theme changes */
 * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.3s ease;
 }
 
 /* Loading animation */
@@ -152,15 +161,33 @@
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 40px rgba(139, 92, 246, 0.3);
+  }
+}
+
 .animate-spin {
   animation: spin 1s linear infinite;
 }
 
-/* Custom checkbox animation */
-.ai-toggle input[type="checkbox"]:checked + .slider {
-  background-color: #2563EB;
+/* Enhanced glassmorphism effects */
+.glass-card {
+  @apply backdrop-blur-2xl bg-gradient-to-br from-white/40 to-white/20 dark:from-slate-800/40 dark:to-slate-900/20 border border-white/30 dark:border-slate-600/30 shadow-xl;
 }
 
-.ai-toggle input[type="checkbox"]:checked + .slider:before {
-  transform: translateX(26px);
+.glass-card-hover {
+  @apply hover:bg-gradient-to-br hover:from-white/50 hover:to-white/30 dark:hover:from-slate-700/50 dark:hover:to-slate-800/30;
 }

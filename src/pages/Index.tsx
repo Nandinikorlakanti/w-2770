@@ -5,7 +5,7 @@ import { TaskInput } from '../components/TaskInput';
 import { TaskCard } from '../components/TaskCard';
 import { TaskStats } from '../components/TaskStats';
 import { Task, TaskStats as TaskStatsType, ParsedTask } from '../types/task';
-import { saveTasks, loadTasks, saveSettings, loadSettings, exportTasks, importTasks, clearAllData } from '../utils/storage';
+import { saveTasks, loadTasks, saveSettings, loadSettings, clearAllData } from '../utils/storage';
 import { isOverdue, isDueToday, isDueTomorrow } from '../utils/taskParser';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -19,7 +19,6 @@ const Index = () => {
   const [filterBy, setFilterBy] = useState<'all' | 'active' | 'completed' | 'overdue'>('all');
   const [isDark, setIsDark] = useState(false);
   const [useAI, setUseAI] = useState(false);
-  const [geminiApiKey, setGeminiApiKey] = useState('');
   const { toast } = useToast();
 
   // Load data on mount
@@ -29,7 +28,6 @@ const Index = () => {
     
     setTasks(savedTasks);
     setUseAI(savedSettings.useAI);
-    setGeminiApiKey(savedSettings.geminiApiKey || '');
     
     // Set theme
     if (savedSettings.theme === 'dark' || (savedSettings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -47,10 +45,9 @@ const Index = () => {
   useEffect(() => {
     saveSettings({
       useAI,
-      theme: 'system',
-      geminiApiKey: geminiApiKey || undefined
+      theme: 'system'
     });
-  }, [useAI, geminiApiKey]);
+  }, [useAI]);
 
   const handleThemeToggle = () => {
     setIsDark(!isDark);
@@ -96,32 +93,8 @@ const Index = () => {
     }
   };
 
-  const handleExport = () => {
-    const data = exportTasks(tasks);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tasks-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Export Complete",
-      description: "Tasks have been exported successfully.",
-    });
-  };
-
-  const handleImport = (data: string) => {
-    const importedTasks = importTasks(data);
-    setTasks(prev => [...importedTasks, ...prev]);
-  };
-
   const handleClearAll = () => {
     setTasks([]);
-    setGeminiApiKey('');
     setUseAI(false);
     clearAllData();
   };
@@ -188,16 +161,10 @@ const Index = () => {
   }, [tasks]);
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDark ? 'bg-dark-bg text-text-primary-dark' : 'bg-light-bg text-text-primary-light'
-    }`}>
+    <div className="min-h-screen transition-all duration-500 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Header
         isDark={isDark}
         onToggleTheme={handleThemeToggle}
-        geminiApiKey={geminiApiKey}
-        onApiKeyChange={setGeminiApiKey}
-        onExport={handleExport}
-        onImport={handleImport}
         onClearAll={handleClearAll}
       />
 
@@ -206,39 +173,40 @@ const Index = () => {
           {/* Left Column - Input and Stats */}
           <div className="lg:col-span-1 space-y-6">
             {/* Task Input */}
-            <div className="bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4">Create New Task</h2>
+            <div className="glass-card rounded-2xl p-6 shadow-2xl animate-float">
+              <h2 className="text-xl font-bold mb-6 text-gradient">Create New Task</h2>
               <TaskInput
                 onTaskCreate={createTask}
                 useAI={useAI}
                 onToggleAI={setUseAI}
-                geminiApiKey={geminiApiKey}
               />
             </div>
 
             {/* Stats */}
-            <TaskStats stats={stats} />
+            <div className="animate-glow">
+              <TaskStats stats={stats} />
+            </div>
           </div>
 
           {/* Right Column - Task List */}
           <div className="lg:col-span-2 space-y-6">
             {/* Filters and Search */}
-            <div className="bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
+            <div className="glass-card rounded-2xl p-6 shadow-xl">
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Search */}
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-indigo-400" />
                   <Input
                     placeholder="Search tasks, assignees, or priorities..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl"
                   />
                 </div>
 
                 {/* Filter */}
                 <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -251,7 +219,7 @@ const Index = () => {
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl">
                     <SortAsc className="h-4 w-4 mr-2" />
                     <SelectValue />
                   </SelectTrigger>
@@ -268,8 +236,12 @@ const Index = () => {
             {/* Task List */}
             <div className="space-y-4">
               {filteredAndSortedTasks.length > 0 ? (
-                filteredAndSortedTasks.map((task) => (
-                  <div key={task.id} className="animate-fade-in">
+                filteredAndSortedTasks.map((task, index) => (
+                  <div 
+                    key={task.id} 
+                    className="animate-fade-in task-card-hover"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     <TaskCard
                       task={task}
                       onUpdate={updateTask}
@@ -278,10 +250,10 @@ const Index = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-12 bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-border-light dark:border-border-dark">
-                  <div className="text-6xl mb-4">📝</div>
-                  <h3 className="text-lg font-medium mb-2">No tasks found</h3>
-                  <p className="text-muted-foreground">
+                <div className="text-center py-16 glass-card rounded-2xl shadow-xl">
+                  <div className="text-6xl mb-4 animate-bounce">🚀</div>
+                  <h3 className="text-xl font-semibold mb-2 text-gradient">No tasks found</h3>
+                  <p className="text-slate-600 dark:text-slate-400">
                     {searchQuery || filterBy !== 'all' 
                       ? "Try adjusting your search or filters"
                       : "Create your first task to get started!"
