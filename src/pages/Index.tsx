@@ -174,7 +174,6 @@ const Index = () => {
           <div className="lg:col-span-1 space-y-6">
             {/* Task Input */}
             <div className="glass-card rounded-2xl p-6 shadow-2xl animate-float">
-              <h2 className="text-xl font-bold mb-6 text-gradient">Create New Task</h2>
               <TaskInput
                 onTaskCreate={createTask}
                 useAI={useAI}
@@ -200,13 +199,13 @@ const Index = () => {
                     placeholder="Search tasks, assignees, or priorities..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl"
+                    className="pl-10 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
                   />
                 </div>
 
                 {/* Filter */}
                 <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
-                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl">
+                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-slate-100">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -219,7 +218,7 @@ const Index = () => {
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl">
+                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-slate-100">
                     <SortAsc className="h-4 w-4 mr-2" />
                     <SelectValue />
                   </SelectTrigger>
@@ -253,7 +252,7 @@ const Index = () => {
                 <div className="text-center py-16 glass-card rounded-2xl shadow-xl">
                   <div className="text-6xl mb-4 animate-bounce">🚀</div>
                   <h3 className="text-xl font-semibold mb-2 text-gradient">No tasks found</h3>
-                  <p className="text-slate-600 dark:text-slate-400">
+                  <p className="text-slate-700 dark:text-slate-300">
                     {searchQuery || filterBy !== 'all' 
                       ? "Try adjusting your search or filters"
                       : "Create your first task to get started!"

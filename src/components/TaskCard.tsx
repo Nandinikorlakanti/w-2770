@@ -50,11 +50,11 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'P1': return 'bg-priority-p1/20 text-priority-p1 border-priority-p1/30';
-      case 'P2': return 'bg-priority-p2/20 text-priority-p2 border-priority-p2/30';
-      case 'P3': return 'bg-priority-p3/20 text-priority-p3 border-priority-p3/30';
-      case 'P4': return 'bg-priority-p4/20 text-priority-p4 border-priority-p4/30';
-      default: return 'bg-gray-100 text-gray-600 border-gray-300';
+      case 'P1': return 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700';
+      case 'P2': return 'bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700';
+      case 'P3': return 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700';
+      case 'P4': return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-700';
+      default: return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-700';
     }
   };
 
@@ -75,12 +75,12 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
 
   return (
     <div className={`
-      group relative bg-white dark:bg-dark-card rounded-xl border border-border-light dark:border-border-dark
+      group relative bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700
       shadow-sm hover:shadow-xl transition-all duration-200 ease-smooth
-      hover:-translate-y-1 hover:border-primary-blue/20 
+      hover:-translate-y-1 hover:border-indigo-300 dark:hover:border-indigo-600
       ${task.completed ? 'opacity-60' : ''}
-      ${dateStatus === 'overdue' ? 'ring-1 ring-error-red/20' : ''}
-      ${dateStatus === 'today' ? 'ring-1 ring-warning-orange/20' : ''}
+      ${dateStatus === 'overdue' ? 'ring-1 ring-red-400/30' : ''}
+      ${dateStatus === 'today' ? 'ring-1 ring-orange-400/30' : ''}
     `}>
       <div className="p-6">
         {/* Header */}
@@ -89,18 +89,18 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
             <Checkbox
               checked={task.completed}
               onCheckedChange={toggleComplete}
-              className="data-[state=checked]:bg-success-green data-[state=checked]:border-success-green"
+              className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
             />
             
             {isEditing ? (
               <Input
                 value={editedTask.name}
                 onChange={(e) => setEditedTask(prev => ({ ...prev, name: e.target.value }))}
-                className="text-base font-medium"
+                className="text-base font-medium text-slate-900 dark:text-slate-100"
                 autoFocus
               />
             ) : (
-              <h3 className={`text-base font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+              <h3 className={`text-base font-medium ${task.completed ? 'line-through text-slate-500 dark:text-slate-400' : 'text-slate-900 dark:text-slate-100'}`}>
                 {task.name}
               </h3>
             )}
@@ -135,7 +135,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
         <div className="space-y-2 mb-4">
           {/* Assignee */}
           {(task.assignee || isEditing) && (
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-300">
               <User className="h-4 w-4" />
               {isEditing ? (
                 <Input
@@ -153,20 +153,20 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
           {/* Due Date */}
           {task.dueDate && (
             <div className={`flex items-center space-x-2 text-sm ${
-              dateStatus === 'overdue' ? 'text-error-red' :
-              dateStatus === 'today' ? 'text-warning-orange' :
-              dateStatus === 'tomorrow' ? 'text-primary-blue' :
-              'text-muted-foreground'
+              dateStatus === 'overdue' ? 'text-red-600 dark:text-red-400' :
+              dateStatus === 'today' ? 'text-orange-600 dark:text-orange-400' :
+              dateStatus === 'tomorrow' ? 'text-blue-600 dark:text-blue-400' :
+              'text-slate-600 dark:text-slate-300'
             }`}>
               <Clock className="h-4 w-4" />
               <span>Due: {formatDueDate(task.dueDate)}</span>
               {dateStatus === 'overdue' && !task.completed && (
-                <span className="px-2 py-1 bg-error-red/20 text-error-red rounded-full text-xs font-medium">
+                <span className="px-2 py-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 rounded-full text-xs font-medium">
                   Overdue
                 </span>
               )}
               {dateStatus === 'today' && (
-                <span className="px-2 py-1 bg-warning-orange/20 text-warning-orange rounded-full text-xs font-medium">
+                <span className="px-2 py-1 bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 rounded-full text-xs font-medium">
                   Due Today
                 </span>
               )}
@@ -174,20 +174,20 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
           )}
 
           {/* Created Date */}
-          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+          <div className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
             <Calendar className="h-3 w-3" />
             <span>Created: {task.createdAt.toLocaleDateString()}</span>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
           {isEditing ? (
             <div className="flex space-x-2">
               <Button
                 size="sm"
                 onClick={handleSave}
-                className="bg-success-green hover:bg-success-green/90 text-white"
+                className="bg-green-600 hover:bg-green-700 text-white"
               >
                 <Check className="h-3 w-3 mr-1" />
                 Save
@@ -196,6 +196,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
                 size="sm"
                 variant="outline"
                 onClick={handleCancel}
+                className="text-slate-700 dark:text-slate-300"
               >
                 <X className="h-3 w-3 mr-1" />
                 Cancel
@@ -207,7 +208,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
                 size="sm"
                 variant="outline"
                 onClick={() => setIsEditing(true)}
-                className="hover:bg-primary-blue/10 hover:border-primary-blue/20"
+                className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 dark:hover:bg-blue-900/30 dark:hover:border-blue-600 dark:hover:text-blue-300"
               >
                 <Edit className="h-3 w-3 mr-1" />
                 Edit
@@ -216,7 +217,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
                 size="sm"
                 variant="outline"
                 onClick={() => onDelete(task.id)}
-                className="hover:bg-error-red/10 hover:border-error-red/20 hover:text-error-red"
+                className="hover:bg-red-50 hover:border-red-300 hover:text-red-700 dark:hover:bg-red-900/30 dark:hover:border-red-600 dark:hover:text-red-300"
               >
                 <Trash2 className="h-3 w-3 mr-1" />
                 Delete
@@ -225,7 +226,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
           )}
 
           {!isEditing && task.completed && (
-            <div className="flex items-center text-success-green text-sm font-medium">
+            <div className="flex items-center text-green-600 dark:text-green-400 text-sm font-medium">
               <Check className="h-4 w-4 mr-1" />
               Completed
             </div>
@@ -235,7 +236,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
 
       {/* Subtle gradient overlay for completed tasks */}
       {task.completed && (
-        <div className="absolute inset-0 bg-gradient-to-r from-success-green/5 to-transparent rounded-xl pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl pointer-events-none" />
       )}
     </div>
   );

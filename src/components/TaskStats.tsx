@@ -49,7 +49,7 @@ export function TaskStats({ stats }: TaskStatsProps) {
           <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             {completionRate}%
           </div>
-          <div className="text-sm text-slate-600 dark:text-slate-400">Completion Rate</div>
+          <div className="text-sm text-slate-700 dark:text-slate-300 font-medium">Completion Rate</div>
         </div>
       </div>
 
@@ -70,8 +70,8 @@ export function TaskStats({ stats }: TaskStatsProps) {
             <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 bg-gradient-to-r ${item.gradient} shadow-lg`}>
               <item.icon className="h-6 w-6 text-white" />
             </div>
-            <div className="text-2xl font-bold mb-1 text-slate-700 dark:text-slate-200">{item.value}</div>
-            <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">{item.label}</div>
+            <div className="text-2xl font-bold mb-1 text-slate-800 dark:text-slate-100">{item.value}</div>
+            <div className="text-sm text-slate-700 dark:text-slate-300 font-medium">{item.label}</div>
           </div>
         ))}
       </div>
