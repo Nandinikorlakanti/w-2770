@@ -2,14 +2,17 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, FileText, Trash2, Plus, ListTodo, Sparkles } from 'lucide-react';
+import { Loader2, FileText, Trash2, Plus, Mic, Sparkles, Zap } from 'lucide-react';
 import { parseWithGemini } from '../utils/geminiApi';
 import { parseMeetingTranscript } from '../utils/meetingParser';
 import { ParsedTask } from '../types/task';
 
 interface MeetingMinutesParserProps {
   onTasksCreate: (tasks: ParsedTask[]) => void;
+  useAI: boolean;
+  onToggleAI: (useAI: boolean) => void;
 }
 
 interface ParsedMeetingTask extends ParsedTask {
@@ -17,7 +20,7 @@ interface ParsedMeetingTask extends ParsedTask {
   originalText: string;
 }
 
-export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProps) {
+export function MeetingMinutesParser({ onTasksCreate, useAI, onToggleAI }: MeetingMinutesParserProps) {
   const [transcript, setTranscript] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [parsedTasks, setParsedTasks] = useState<ParsedMeetingTask[]>([]);
@@ -32,14 +35,18 @@ export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProp
     try {
       let tasks: ParsedMeetingTask[];
       
-      try {
-        const apiKey = import.meta.env.VITE_AI_API_KEY;
-        if (!apiKey) {
-          throw new Error('AI API key not found');
+      if (useAI) {
+        try {
+          const apiKey = import.meta.env.VITE_AI_API_KEY;
+          if (!apiKey) {
+            throw new Error('AI API key not found');
+          }
+          tasks = await parseMeetingWithGemini(transcript, apiKey);
+        } catch (error) {
+          console.error('AI parsing failed, falling back to basic parsing:', error);
+          tasks = parseMeetingTranscript(transcript);
         }
-        tasks = await parseMeetingWithGemini(transcript, apiKey);
-      } catch (error) {
-        console.error('AI parsing failed, falling back to basic parsing:', error);
+      } else {
         tasks = parseMeetingTranscript(transcript);
       }
       
@@ -88,15 +95,33 @@ export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProp
       <div className="text-center">
         <div className="flex items-center justify-center mb-4">
           <div className="p-3 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full">
-            <ListTodo className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+            <Mic className="h-8 w-8 text-purple-600 dark:text-purple-400" />
           </div>
         </div>
         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">
-          Bulk Task Creator
+          AI Meeting Minutes to Task Converter
         </h2>
         <p className="text-slate-600 dark:text-slate-300">
-          Transform text content into multiple actionable tasks
+          Transform meeting transcripts into actionable tasks
         </p>
+      </div>
+
+      {/* AI Toggle */}
+      <div className="flex items-center justify-center">
+        <div className="flex items-center space-x-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-slate-800/50 dark:to-slate-700/50 p-4 rounded-2xl backdrop-blur-sm border border-purple-200/50 dark:border-slate-600/50">
+          <Switch
+            id="ai-toggle-meeting"
+            checked={useAI}
+            onCheckedChange={onToggleAI}
+            className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-500 data-[state=checked]:to-pink-500"
+          />
+          <Label htmlFor="ai-toggle-meeting" className="flex items-center space-x-2 text-sm font-medium cursor-pointer">
+            {useAI ? <Zap className="h-4 w-4 text-purple-500" /> : <Sparkles className="h-4 w-4 text-pink-500" />}
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              {useAI ? 'AI Processing' : 'Basic Processing'}
+            </span>
+          </Label>
+        </div>
       </div>
 
       {/* Sample Button */}
@@ -108,7 +133,7 @@ export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProp
           className="text-purple-600 border-purple-300 hover:bg-purple-50 dark:text-purple-400 dark:border-purple-600 dark:hover:bg-purple-900/20"
         >
           <FileText className="h-4 w-4 mr-2" />
-          Load Sample Text
+          Load Sample Transcript
         </Button>
       </div>
 
@@ -117,7 +142,7 @@ export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProp
         <Textarea
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
-          placeholder="Paste your text content here (meeting notes, task lists, etc.)..."
+          placeholder="Paste your meeting transcript here..."
           className="min-h-[200px] text-base bg-gradient-to-br from-white/80 to-purple-50/80 dark:from-slate-800/80 dark:to-slate-700/80 backdrop-blur-sm border-2 border-purple-200/50 dark:border-slate-600/50 focus:border-gradient-to-r focus:from-purple-400 focus:to-pink-400 rounded-2xl shadow-lg transition-all duration-300 resize-none text-slate-800 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
           disabled={isLoading}
         />
@@ -133,12 +158,12 @@ export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProp
           {isLoading ? (
             <>
               <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-              Processing with AI...
+              {useAI ? 'Processing with AI...' : 'Parsing Meeting...'}
             </>
           ) : (
             <>
-              <Sparkles className="mr-3 h-5 w-5" />
-              Extract Tasks
+              <Mic className="mr-3 h-5 w-5" />
+              Parse Meeting
             </>
           )}
         </Button>
@@ -160,7 +185,7 @@ export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProp
           <div className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-slate-800/50 dark:to-slate-700/50 rounded-2xl p-6 border border-green-200/50 dark:border-slate-600/50">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                ✨ {parsedTasks.length} tasks extracted from text
+                ✨ {parsedTasks.length} tasks extracted from transcript
               </h3>
               <Button
                 onClick={handleAddAllTasks}
@@ -186,7 +211,7 @@ export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProp
                         {task.priority}
                       </span>
                       <span className="px-2 py-1 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 rounded-full text-xs font-medium">
-                        Bulk
+                        Meeting
                       </span>
                     </div>
                   </div>
@@ -218,7 +243,7 @@ export function MeetingMinutesParser({ onTasksCreate }: MeetingMinutesParserProp
 
 async function parseMeetingWithGemini(transcript: string, apiKey: string): Promise<ParsedMeetingTask[]> {
   const prompt = `
-You are an intelligent task analyzer. Parse the following text and extract all actionable tasks. Return ONLY valid JSON with this exact structure:
+You are an intelligent meeting transcript analyzer. Parse the following meeting transcript and extract all actionable tasks. Return ONLY valid JSON with this exact structure:
 
 {
   "tasks": [
@@ -228,23 +253,22 @@ You are an intelligent task analyzer. Parse the following text and extract all a
       "dueDate": "ISO date string or null",
       "priority": "P1, P2, P3, or P4",
       "confidence": "high, medium, or low",
-      "originalText": "original sentence from text"
+      "originalText": "original sentence from transcript"
     }
   ]
 }
 
-Rules for parsing text:
+Rules for parsing meeting transcripts:
 1. Look for assignment patterns: "you take", "please handle", "can you", "your responsibility", names followed by tasks
 2. Extract clear assignee names mentioned in the context of task assignments
 3. Parse deadline expressions: "tomorrow", "tonight", "Wednesday", "by Friday 2pm", "next Monday"
-4. For "tonight" - set due date to today's end of day (23:59:59)
-5. Identify priority mentions (P1, P2, P3, P4) or infer from urgency context
-6. Confidence levels:
+4. Identify priority mentions (P1, P2, P3, P4) or infer from urgency context
+5. Confidence levels:
    - high: Clear assignee, clear deadline, specific task
    - medium: Missing one element (assignee OR deadline unclear)
    - low: Vague assignment or unclear task description
 
-Text: "${transcript}"
+Transcript: "${transcript}"
 
 JSON:`;
 
