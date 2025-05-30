@@ -54,45 +54,6 @@
     --premium-blue: 217 91% 60%;
     --premium-green: 142 76% 47%;
   }
-
-  .dark {
-    --background: 220 27% 8%;
-    --foreground: 210 40% 98%;
-
-    --card: 220 27% 10%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 220 27% 10%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 220 27% 15%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 220 27% 15%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-
-    --accent: 220 27% 15%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 220 27% 20%;
-    --input: 220 27% 20%;
-    --ring: 263.4 70% 50.4%;
-
-    --sidebar-background: 220 27% 8%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 263.4 70% 50.4%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 220 27% 15%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 27% 20%;
-    --sidebar-ring: 263.4 70% 50.4%;
-  }
 }
 
 @layer base {
@@ -101,7 +62,7 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-900 dark:text-slate-100 font-inter min-h-screen;
+    @apply bg-gradient-to-br from-white via-slate-50 to-slate-100 text-slate-900 font-inter min-h-screen;
     font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     line-height: 1.6;
   }
@@ -117,11 +78,11 @@
   }
   
   .glassmorphism {
-    @apply backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 border border-white/30 dark:border-slate-600/30 shadow-xl;
+    @apply backdrop-blur-xl bg-white/70 border border-white/30 shadow-xl;
   }
   
   .glassmorphism-strong {
-    @apply backdrop-blur-2xl bg-white/90 dark:bg-slate-800/90 border border-white/40 dark:border-slate-600/40 shadow-2xl;
+    @apply backdrop-blur-2xl bg-white/90 border border-white/40 shadow-2xl;
   }
   
   .task-card-hover {
@@ -137,7 +98,7 @@
   }
   
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800;
+    @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
   }
   
   .text-gradient-primary {
@@ -216,7 +177,7 @@
 
   /* Card Enhancements */
   .card-premium {
-    @apply bg-white dark:bg-slate-800 rounded-lg border-0 shadow-premium hover:shadow-premium-hover transition-all duration-300;
+    @apply bg-white rounded-lg border-0 shadow-premium hover:shadow-premium-hover transition-all duration-300;
   }
 
   /* Header Gradient */
@@ -230,7 +191,7 @@
   }
 
   .floating-label-active {
-    @apply -translate-y-6 text-xs text-indigo-600 bg-white dark:bg-slate-800 px-1;
+    @apply -translate-y-6 text-xs text-indigo-600 bg-white px-1;
   }
 }
 
@@ -305,11 +266,11 @@
 
 /* Enhanced Glassmorphism Effects */
 .glass-card-premium {
-  @apply backdrop-blur-2xl bg-gradient-to-br from-white/80 to-white/60 dark:from-slate-800/80 dark:to-slate-900/60 border border-white/40 dark:border-slate-600/40 shadow-2xl rounded-xl;
+  @apply backdrop-blur-2xl bg-gradient-to-br from-white/80 to-white/60 border border-white/40 shadow-2xl rounded-xl;
 }
 
 .glass-card-hover-premium {
-  @apply hover:bg-gradient-to-br hover:from-white/90 hover:to-white/70 dark:hover:from-slate-700/90 dark:hover:to-slate-800/70;
+  @apply hover:bg-gradient-to-br hover:from-white/90 hover:to-white/70;
 }
 
 /* Form Enhancements */
@@ -318,7 +279,7 @@
 }
 
 .form-input-premium {
-  @apply w-full px-4 py-3 bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 transition-all duration-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 focus:shadow-lg focus:shadow-indigo-500/20;
+  @apply w-full px-4 py-3 bg-white/90 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 transition-all duration-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 focus:shadow-lg focus:shadow-indigo-500/20;
 }
 
 /* Priority Badge Animations */

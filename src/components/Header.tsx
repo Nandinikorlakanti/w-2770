@@ -1,19 +1,14 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Settings, Moon, Sun, Trash2 } from 'lucide-react';
+import { Settings, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface HeaderProps {
-  isDark: boolean;
-  onToggleTheme: () => void;
   onClearAll: () => void;
 }
 
 export function Header({ 
-  isDark, 
-  onToggleTheme, 
   onClearAll
 }: HeaderProps) {
   const { toast } = useToast();
@@ -59,17 +54,6 @@ export function Header({
               <Trash2 className="h-4 w-4 mr-2" />
               Clear All
             </Button>
-
-            {/* Theme Toggle */}
-            <div className="flex items-center space-x-3 bg-white/20 backdrop-blur-md p-3 rounded-xl border border-white/30 shadow-lg">
-              <Sun className="h-5 w-5 text-orange-300" />
-              <Switch
-                checked={isDark}
-                onCheckedChange={onToggleTheme}
-                className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-slate-600 data-[state=checked]:to-slate-700"
-              />
-              <Moon className="h-5 w-5 text-blue-300" />
-            </div>
           </div>
         </div>
       </div>

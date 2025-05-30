@@ -20,7 +20,6 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'dueDate' | 'priority' | 'created' | 'name'>('created');
   const [filterBy, setFilterBy] = useState<'all' | 'active' | 'completed' | 'overdue'>('all');
-  const [isDark, setIsDark] = useState(false);
   const [useAI, setUseAI] = useState(false);
   const [activeTab, setActiveTab] = useState('single');
   const [isMobileView, setIsMobileView] = useState(false);
@@ -33,12 +32,6 @@ const Index = () => {
     
     setTasks(savedTasks);
     setUseAI(savedSettings.useAI);
-    
-    // Set theme
-    if (savedSettings.theme === 'dark' || (savedSettings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    }
   }, []);
 
   // Save tasks whenever they change
@@ -50,14 +43,9 @@ const Index = () => {
   useEffect(() => {
     saveSettings({
       useAI,
-      theme: 'system'
+      theme: 'light'
     });
   }, [useAI]);
-
-  const handleThemeToggle = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
-  };
 
   const createTask = (parsedTask: ParsedTask) => {
     const newTask: Task = {
@@ -199,10 +187,8 @@ const Index = () => {
     : "lg:col-span-2 space-y-6";
 
   return (
-    <div className="min-h-screen transition-all duration-500 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen transition-all duration-500 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50">
       <Header
-        isDark={isDark}
-        onToggleTheme={handleThemeToggle}
         onClearAll={handleClearAll}
       />
 
@@ -221,17 +207,17 @@ const Index = () => {
             {/* Task Input Tabs */}
             <div className={`glass-card rounded-2xl p-${isMobileView ? '4' : '6'} shadow-2xl animate-float`}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className={`grid w-full grid-cols-2 mb-${isMobileView ? '4' : '6'} bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-slate-700 dark:to-slate-600`}>
+                <TabsList className={`grid w-full grid-cols-2 mb-${isMobileView ? '4' : '6'} bg-gradient-to-r from-indigo-100 to-purple-100`}>
                   <TabsTrigger 
                     value="single" 
-                    className="flex items-center space-x-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400"
+                    className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:text-indigo-600"
                   >
                     <Plus className="h-4 w-4" />
                     <span className={isMobileView ? "text-xs" : ""}>Single Task</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="bulk" 
-                    className="flex items-center space-x-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400"
+                    className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:text-purple-600"
                   >
                     <ListTodo className="h-4 w-4" />
                     <span className={isMobileView ? "text-xs" : ""}>Bulk Tasks</span>
@@ -272,14 +258,14 @@ const Index = () => {
                     placeholder={isMobileView ? "Search tasks..." : "Search tasks, assignees, or priorities..."}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
+                    className="pl-10 bg-white/50 border-indigo-200/50 rounded-xl text-slate-800 placeholder:text-slate-500"
                   />
                 </div>
 
                 {/* Filter and Sort */}
                 <div className="flex gap-2">
                   <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
-                    <SelectTrigger className={`${isMobileView ? 'w-full' : 'w-40'} bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100`}>
+                    <SelectTrigger className={`${isMobileView ? 'w-full' : 'w-40'} bg-white/50 border-indigo-200/50 rounded-xl text-slate-800`}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -291,7 +277,7 @@ const Index = () => {
                   </Select>
 
                   <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                    <SelectTrigger className={`${isMobileView ? 'w-full' : 'w-40'} bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100`}>
+                    <SelectTrigger className={`${isMobileView ? 'w-full' : 'w-40'} bg-white/50 border-indigo-200/50 rounded-xl text-slate-800`}>
                       <SortAsc className="h-4 w-4 mr-2" />
                       <SelectValue />
                     </SelectTrigger>
@@ -326,7 +312,7 @@ const Index = () => {
                 <div className={`text-center py-${isMobileView ? '12' : '16'} glass-card rounded-2xl shadow-xl`}>
                   <div className={`text-${isMobileView ? '4xl' : '6xl'} mb-4 animate-bounce`}>🚀</div>
                   <h3 className={`text-${isMobileView ? 'lg' : 'xl'} font-semibold mb-2 text-gradient`}>No tasks found</h3>
-                  <p className={`text-slate-600 dark:text-slate-300 ${isMobileView ? 'text-sm px-4' : ''}`}>
+                  <p className={`text-slate-600 ${isMobileView ? 'text-sm px-4' : ''}`}>
                     {searchQuery || filterBy !== 'all' 
                       ? "Try adjusting your search or filters"
                       : "Create your first task to get started!"
