@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -42,8 +41,10 @@ export function TaskInput({ onTaskCreate, useAI, onToggleAI }: TaskInputProps) {
       
       if (useAI) {
         try {
-          // In production, API key would come from environment
-          const apiKey = process.env.REACT_APP_GEMINI_API_KEY || '';
+          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+          if (!apiKey) {
+            throw new Error('Gemini API key not found');
+          }
           parsedTask = await parseWithGemini(input, apiKey);
         } catch (error) {
           console.error('AI parsing failed, falling back to basic parsing:', error);

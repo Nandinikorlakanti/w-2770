@@ -1,11 +1,10 @@
-
 import { ParsedTask } from '../types/task';
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
 export async function parseWithGemini(input: string, apiKey: string): Promise<ParsedTask> {
   const prompt = `
-Parse the following natural language task input and extract structured information. Return ONLY valid JSON with this exact structure:
+You are an intelligent task management assistant. Analyze the following task input and extract structured information with enhanced understanding. Return ONLY valid JSON with this exact structure:
 
 {
   "name": "main task description",
@@ -14,13 +13,30 @@ Parse the following natural language task input and extract structured informati
   "priority": "P1, P2, P3, or P4"
 }
 
-Rules:
-- Extract the main action/objective as the task name
-- Find person names (usually after "assign", "@", or before "by")
-- Parse dates intelligently (today, tomorrow, next Friday, June 20th, etc.)
-- Extract priority levels P1-P4 (default to P3 if not specified)
-- P1 = Critical/Urgent, P2 = High, P3 = Medium, P4 = Low
-- Return null for missing fields (except priority which defaults to P3)
+Rules for intelligent parsing:
+1. Task Name:
+   - Extract the core objective/action
+   - Expand abbreviations (e.g., "q2" → "Q2 2024")
+   - Make it more specific and actionable
+   - Maintain professional tone
+
+2. Assignee:
+   - Look for names after "assign", "@", "by", or before "next"
+   - Consider context clues for implied assignees
+   - Standardize name format (e.g., "sneha" → "Sneha")
+
+3. Due Date:
+   - Convert relative dates (today, tomorrow, next Friday) to actual dates
+   - Consider business context (e.g., "next" might mean next business day)
+   - Handle date ranges by using the end date
+   - Format as ISO date string
+
+4. Priority (P1-P4):
+   - P1: Critical/Urgent tasks, deadlines within 24-48 hours
+   - P2: High priority, deadlines within a week
+   - P3: Medium priority, deadlines within 2 weeks
+   - P4: Low priority, no immediate deadline
+   - Consider task context, deadlines, and business impact
 
 Input: "${input}"
 
@@ -37,7 +53,7 @@ JSON:`;
           parts: [{ text: prompt }]
         }],
         generationConfig: {
-          temperature: 0.1,
+          temperature: 0.2, // Slightly increased for more creative parsing
           topK: 1,
           topP: 1,
           maxOutputTokens: 200,
