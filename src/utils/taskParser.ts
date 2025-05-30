@@ -1,4 +1,3 @@
-
 import { ParsedTask } from '../types/task';
 
 const PRIORITY_REGEX = /\b(P[1-4])\b/i;
@@ -9,9 +8,20 @@ const NAME_PATTERNS = [
 ];
 
 const ASSIGNEE_PATTERNS = [
-  /(?:assign(?:ed)?\s+to\s+|@)(\w+)/i,
-  /\b(\w+)\s+(?:by|due|deadline)/i,
-  /\s(\w+)(?:\s+by|\s+\d)/i
+  // Match "assign to [name]" or "assigned to [name]"
+  /(?:assign(?:ed)?\s+to\s+)([a-zA-Z]+(?:\s+[a-zA-Z]+)?)/i,
+  // Match "@[name]" (handle @ mentions)
+  /@([a-zA-Z]+(?:\s+[a-zA-Z]+)?)/i,
+  // Match "for [name]" 
+  /\bfor\s+([a-zA-Z]+(?:\s+[a-zA-Z]+)?)/i,
+  // Match "[name] should do" or "[name] needs to"
+  /^([a-zA-Z]+(?:\s+[a-zA-Z]+)?)\s+(?:should|needs?\s+to|must|has\s+to)/i,
+  // Match "give to [name]" or "give [name]"
+  /(?:give\s+(?:to\s+)?|hand\s+(?:to\s+)?)([a-zA-Z]+(?:\s+[a-zA-Z]+)?)/i,
+  // Match "[name] to do" or "[name] will do"
+  /([a-zA-Z]+(?:\s+[a-zA-Z]+)?)\s+(?:to\s+do|will\s+do|can\s+do)/i,
+  // Match patterns like "by [name]" but be more specific to avoid dates
+  /\bby\s+([a-zA-Z]+(?:\s+[a-zA-Z]+)?)\b(?!\s*(?:today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d))/i,
 ];
 
 const TIME_PATTERNS = [
@@ -38,13 +48,25 @@ export function parseNaturalLanguage(input: string): ParsedTask {
   const priorityMatch = trimmedInput.match(PRIORITY_REGEX);
   const priority = priorityMatch ? priorityMatch[1].toUpperCase() as 'P1' | 'P2' | 'P3' | 'P4' : 'P3';
   
-  // Extract assignee
+  // Extract assignee with improved parsing
   let assignee: string | undefined;
   for (const pattern of ASSIGNEE_PATTERNS) {
     const match = trimmedInput.match(pattern);
     if (match && match[1]) {
-      assignee = match[1];
-      break;
+      // Clean up the assignee name
+      let extractedName = match[1].trim();
+      
+      // Remove common words that might get caught
+      extractedName = extractedName.replace(/\b(the|a|an|this|that|should|needs?|must|has|will|can|to|do)\b/gi, '').trim();
+      
+      // Only accept if it's a valid name (letters and spaces only, reasonable length)
+      if (extractedName && /^[a-zA-Z\s]+$/.test(extractedName) && extractedName.length >= 2 && extractedName.length <= 50) {
+        // Capitalize first letter of each word
+        assignee = extractedName.split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
+        break;
+      }
     }
   }
   
@@ -54,7 +76,7 @@ export function parseNaturalLanguage(input: string): ParsedTask {
   // Extract task name (clean version without metadata)
   let name = extractTaskName(trimmedInput, assignee, priority, dueDate);
   
-  // Clean up the name
+  // Clean up the name more thoroughly
   name = name
     .replace(PRIORITY_REGEX, '')
     .replace(/\b(today|tomorrow|yesterday)\b/i, '')
@@ -68,10 +90,16 @@ export function parseNaturalLanguage(input: string): ParsedTask {
     .replace(/\bin\s+(\d+)\s+(day|days|week|weeks|month|months)\b/i, '')
     .replace(/\bafter\s+(\d+)\s+(day|days|week|weeks|month|months)\b/i, '')
     .replace(/\b(?:by|due|deadline|@)\b/i, '')
-    .replace(/\b(?:assign(?:ed)?\s+to)\b/i, '')
-    .replace(new RegExp(`\\b${assignee}\\b`, 'i'), '')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(/\b(?:assign(?:ed)?\s+to|for|give\s+(?:to\s+)?|hand\s+(?:to\s+)?)\b/i, '')
+    .replace(/\b(?:should|needs?\s+to|must|has\s+to|to\s+do|will\s+do|can\s+do)\b/i, '')
+    
+  // Remove the assignee name from the task name if it exists
+  if (assignee) {
+    const assigneeRegex = new RegExp(`\\b${assignee.replace(/\s+/g, '\\s+')}\\b`, 'gi');
+    name = name.replace(assigneeRegex, '');
+  }
+  
+  name = name.replace(/\s+/g, ' ').trim();
   
   return {
     name: name || 'Untitled Task',
@@ -91,7 +119,7 @@ function extractTaskName(input: string, assignee?: string, priority?: string, du
   }
   
   // Fallback: take everything before common keywords
-  const keywords = ['by', 'due', 'deadline', 'tomorrow', 'today', 'next', 'this', 'assign', '@'];
+  const keywords = ['by', 'due', 'deadline', 'tomorrow', 'today', 'next', 'this', 'assign', '@', 'for', 'should', 'needs', 'must', 'give', 'hand'];
   let name = input;
   
   for (const keyword of keywords) {
