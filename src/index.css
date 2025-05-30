@@ -358,5 +358,5 @@
 }
 
 .micro-glow {
-  @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-current/20;
+  @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-indigo-500/20;
 }
