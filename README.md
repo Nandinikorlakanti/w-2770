@@ -84,7 +84,7 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 4. Run the app
 python manage.py runserver
-
+```
 
 ![image](https://github.com/user-attachments/assets/86525420-a160-4b71-96e0-7feaeca7dbe3)
 
