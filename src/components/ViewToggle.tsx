@@ -10,32 +10,32 @@ interface ViewToggleProps {
 
 export function ViewToggle({ isMobileView, onToggle }: ViewToggleProps) {
   return (
-    <div className="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-1 border border-slate-200/50 dark:border-slate-600/50">
+    <div className="flex items-center gap-2 glass-card-premium rounded-2xl p-2 shadow-2xl border border-white/30 dark:border-slate-600/30 animate-float">
       <Button
         variant={!isMobileView ? "default" : "ghost"}
         size="sm"
         onClick={() => onToggle(false)}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
+        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-semibold ${
           !isMobileView 
-            ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md' 
-            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-        }`}
+            ? 'btn-gradient-primary text-white shadow-lg shadow-indigo-500/30' 
+            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 micro-glow'
+        } button-premium micro-bounce`}
       >
-        <Monitor className="h-4 w-4" />
-        <span className="hidden sm:inline">Desktop</span>
+        <Monitor className="h-5 w-5" />
+        <span className="hidden sm:inline font-medium">Desktop</span>
       </Button>
       <Button
         variant={isMobileView ? "default" : "ghost"}
         size="sm"
         onClick={() => onToggle(true)}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
+        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-semibold ${
           isMobileView 
-            ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md' 
-            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-        }`}
+            ? 'btn-gradient-accent text-white shadow-lg shadow-cyan-500/30' 
+            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 micro-glow'
+        } button-premium micro-bounce`}
       >
-        <Smartphone className="h-4 w-4" />
-        <span className="hidden sm:inline">Mobile</span>
+        <Smartphone className="h-5 w-5" />
+        <span className="hidden sm:inline font-medium">Mobile</span>
       </Button>
     </div>
   );
