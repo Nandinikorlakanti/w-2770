@@ -1,3 +1,4 @@
+
 import { ParsedTask } from '../types/task';
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
@@ -53,7 +54,7 @@ JSON:`;
           parts: [{ text: prompt }]
         }],
         generationConfig: {
-          temperature: 0.2, // Slightly increased for more creative parsing
+          temperature: 0.2,
           topK: 1,
           topP: 1,
           maxOutputTokens: 200,

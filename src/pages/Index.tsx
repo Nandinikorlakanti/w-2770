@@ -1,15 +1,16 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Header } from '../components/Header';
 import { TaskInput } from '../components/TaskInput';
+import { MeetingMinutesParser } from '../components/MeetingMinutesParser';
 import { TaskCard } from '../components/TaskCard';
 import { TaskStats } from '../components/TaskStats';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Task, TaskStats as TaskStatsType, ParsedTask } from '../types/task';
 import { saveTasks, loadTasks, saveSettings, loadSettings, clearAllData } from '../utils/storage';
 import { isOverdue, isDueToday, isDueTomorrow } from '../utils/taskParser';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, SortAsc } from 'lucide-react';
+import { Search, SortAsc, Plus, Mic } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
@@ -19,6 +20,7 @@ const Index = () => {
   const [filterBy, setFilterBy] = useState<'all' | 'active' | 'completed' | 'overdue'>('all');
   const [isDark, setIsDark] = useState(false);
   const [useAI, setUseAI] = useState(false);
+  const [activeTab, setActiveTab] = useState('single');
   const { toast } = useToast();
 
   // Load data on mount
@@ -68,6 +70,23 @@ const Index = () => {
     toast({
       title: "Task Created",
       description: `"${parsedTask.name}" has been added to your tasks.`,
+    });
+  };
+
+  const createTasksFromMeeting = (parsedTasks: ParsedTask[]) => {
+    const newTasks: Task[] = parsedTasks.map(parsedTask => ({
+      id: crypto.randomUUID(),
+      ...parsedTask,
+      completed: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }));
+    
+    setTasks(prev => [...newTasks, ...prev]);
+    
+    toast({
+      title: "Tasks Created from Meeting",
+      description: `${parsedTasks.length} tasks have been added from the meeting transcript.`,
     });
   };
 
@@ -172,13 +191,42 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Input and Stats */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Task Input */}
+            {/* Task Input Tabs */}
             <div className="glass-card rounded-2xl p-6 shadow-2xl animate-float">
-              <TaskInput
-                onTaskCreate={createTask}
-                useAI={useAI}
-                onToggleAI={setUseAI}
-              />
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-slate-700 dark:to-slate-600">
+                  <TabsTrigger 
+                    value="single" 
+                    className="flex items-center space-x-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Single Task</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="meeting" 
+                    className="flex items-center space-x-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400"
+                  >
+                    <Mic className="h-4 w-4" />
+                    <span>Meeting</span>
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="single" className="mt-0">
+                  <TaskInput
+                    onTaskCreate={createTask}
+                    useAI={useAI}
+                    onToggleAI={setUseAI}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="meeting" className="mt-0">
+                  <MeetingMinutesParser
+                    onTasksCreate={createTasksFromMeeting}
+                    useAI={useAI}
+                    onToggleAI={setUseAI}
+                  />
+                </TabsContent>
+              </Tabs>
             </div>
 
             {/* Stats */}
@@ -199,13 +247,13 @@ const Index = () => {
                     placeholder="Search tasks, assignees, or priorities..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
+                    className="pl-10 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
                   />
                 </div>
 
                 {/* Filter */}
                 <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
-                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-slate-100">
+                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -218,7 +266,7 @@ const Index = () => {
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-slate-100">
+                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100">
                     <SortAsc className="h-4 w-4 mr-2" />
                     <SelectValue />
                   </SelectTrigger>
@@ -252,7 +300,7 @@ const Index = () => {
                 <div className="text-center py-16 glass-card rounded-2xl shadow-xl">
                   <div className="text-6xl mb-4 animate-bounce">🚀</div>
                   <h3 className="text-xl font-semibold mb-2 text-gradient">No tasks found</h3>
-                  <p className="text-slate-700 dark:text-slate-300">
+                  <p className="text-slate-600 dark:text-slate-300">
                     {searchQuery || filterBy !== 'all' 
                       ? "Try adjusting your search or filters"
                       : "Create your first task to get started!"
