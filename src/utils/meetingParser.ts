@@ -99,6 +99,12 @@ function parseDeadline(deadline: string): Date | undefined {
   const now = new Date();
   const trimmed = deadline.trim().toLowerCase();
 
+  if (trimmed.includes('tonight')) {
+    const tonight = new Date(now);
+    tonight.setHours(23, 59, 59, 999);
+    return tonight;
+  }
+
   if (trimmed.includes('tomorrow')) {
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -119,12 +125,6 @@ function parseDeadline(deadline: string): Date | undefined {
     }
     
     return tomorrow;
-  }
-
-  if (trimmed.includes('tonight')) {
-    const tonight = new Date(now);
-    tonight.setHours(23, 59, 59, 999);
-    return tonight;
   }
 
   // Handle specific weekdays

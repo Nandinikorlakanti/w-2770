@@ -1,16 +1,18 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Header } from '../components/Header';
 import { TaskInput } from '../components/TaskInput';
-import { MeetingMinutesParser } from '../components/MeetingMinutesParser';
+import { BulkTaskCreator } from '../components/BulkTaskCreator';
 import { TaskCard } from '../components/TaskCard';
 import { TaskStats } from '../components/TaskStats';
+import { ViewToggle } from '../components/ViewToggle';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Task, TaskStats as TaskStatsType, ParsedTask } from '../types/task';
 import { saveTasks, loadTasks, saveSettings, loadSettings, clearAllData } from '../utils/storage';
 import { isOverdue, isDueToday, isDueTomorrow } from '../utils/taskParser';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, SortAsc, Plus, Mic } from 'lucide-react';
+import { Search, SortAsc, Plus, ListTodo } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
@@ -21,6 +23,7 @@ const Index = () => {
   const [isDark, setIsDark] = useState(false);
   const [useAI, setUseAI] = useState(false);
   const [activeTab, setActiveTab] = useState('single');
+  const [isMobileView, setIsMobileView] = useState(false);
   const { toast } = useToast();
 
   // Load data on mount
@@ -73,7 +76,7 @@ const Index = () => {
     });
   };
 
-  const createTasksFromMeeting = (parsedTasks: ParsedTask[]) => {
+  const createTasksFromBulk = (parsedTasks: ParsedTask[]) => {
     const newTasks: Task[] = parsedTasks.map(parsedTask => ({
       id: crypto.randomUUID(),
       ...parsedTask,
@@ -85,8 +88,8 @@ const Index = () => {
     setTasks(prev => [...newTasks, ...prev]);
     
     toast({
-      title: "Tasks Created from Meeting",
-      description: `${parsedTasks.length} tasks have been added from the meeting transcript.`,
+      title: "Tasks Created",
+      description: `${parsedTasks.length} tasks have been added from bulk creation.`,
     });
   };
 
@@ -179,6 +182,22 @@ const Index = () => {
     return { total, completed, overdue, dueToday, dueTomorrow };
   }, [tasks]);
 
+  const containerClass = isMobileView 
+    ? "max-w-md mx-auto px-4 py-4" 
+    : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8";
+
+  const gridClass = isMobileView 
+    ? "space-y-6" 
+    : "grid grid-cols-1 lg:grid-cols-3 gap-8";
+
+  const leftColumnClass = isMobileView 
+    ? "space-y-4" 
+    : "lg:col-span-1 space-y-6";
+
+  const rightColumnClass = isMobileView 
+    ? "space-y-4" 
+    : "lg:col-span-2 space-y-6";
+
   return (
     <div className="min-h-screen transition-all duration-500 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Header
@@ -187,27 +206,35 @@ const Index = () => {
         onClearAll={handleClearAll}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className={containerClass}>
+        {/* View Toggle */}
+        <div className="flex justify-center mb-6">
+          <ViewToggle 
+            isMobileView={isMobileView} 
+            onToggle={setIsMobileView} 
+          />
+        </div>
+
+        <div className={gridClass}>
           {/* Left Column - Input and Stats */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className={leftColumnClass}>
             {/* Task Input Tabs */}
-            <div className="glass-card rounded-2xl p-6 shadow-2xl animate-float">
+            <div className={`glass-card rounded-2xl p-${isMobileView ? '4' : '6'} shadow-2xl animate-float`}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-slate-700 dark:to-slate-600">
+                <TabsList className={`grid w-full grid-cols-2 mb-${isMobileView ? '4' : '6'} bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-slate-700 dark:to-slate-600`}>
                   <TabsTrigger 
                     value="single" 
                     className="flex items-center space-x-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400"
                   >
                     <Plus className="h-4 w-4" />
-                    <span>Single Task</span>
+                    <span className={isMobileView ? "text-xs" : ""}>Single Task</span>
                   </TabsTrigger>
                   <TabsTrigger 
-                    value="meeting" 
+                    value="bulk" 
                     className="flex items-center space-x-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400"
                   >
-                    <Mic className="h-4 w-4" />
-                    <span>Meeting</span>
+                    <ListTodo className="h-4 w-4" />
+                    <span className={isMobileView ? "text-xs" : ""}>Bulk Tasks</span>
                   </TabsTrigger>
                 </TabsList>
                 
@@ -219,11 +246,9 @@ const Index = () => {
                   />
                 </TabsContent>
                 
-                <TabsContent value="meeting" className="mt-0">
-                  <MeetingMinutesParser
-                    onTasksCreate={createTasksFromMeeting}
-                    useAI={useAI}
-                    onToggleAI={setUseAI}
+                <TabsContent value="bulk" className="mt-0">
+                  <BulkTaskCreator
+                    onTasksCreate={createTasksFromBulk}
                   />
                 </TabsContent>
               </Tabs>
@@ -236,52 +261,53 @@ const Index = () => {
           </div>
 
           {/* Right Column - Task List */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className={rightColumnClass}>
             {/* Filters and Search */}
-            <div className="glass-card rounded-2xl p-6 shadow-xl">
-              <div className="flex flex-col sm:flex-row gap-4">
+            <div className={`glass-card rounded-2xl p-${isMobileView ? '4' : '6'} shadow-xl`}>
+              <div className={`flex ${isMobileView ? 'flex-col' : 'flex-col sm:flex-row'} gap-${isMobileView ? '3' : '4'}`}>
                 {/* Search */}
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-indigo-400" />
                   <Input
-                    placeholder="Search tasks, assignees, or priorities..."
+                    placeholder={isMobileView ? "Search tasks..." : "Search tasks, assignees, or priorities..."}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400"
                   />
                 </div>
 
-                {/* Filter */}
-                <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
-                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Tasks</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Filter and Sort */}
+                <div className="flex gap-2">
+                  <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
+                    <SelectTrigger className={`${isMobileView ? 'w-full' : 'w-40'} bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Tasks</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="overdue">Overdue</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-                {/* Sort */}
-                <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-40 bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100">
-                    <SortAsc className="h-4 w-4 mr-2" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="created">Created Date</SelectItem>
-                    <SelectItem value="dueDate">Due Date</SelectItem>
-                    <SelectItem value="priority">Priority</SelectItem>
-                    <SelectItem value="name">Name</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                    <SelectTrigger className={`${isMobileView ? 'w-full' : 'w-40'} bg-white/50 dark:bg-slate-800/50 border-indigo-200/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-100`}>
+                      <SortAsc className="h-4 w-4 mr-2" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="created">Created Date</SelectItem>
+                      <SelectItem value="dueDate">Due Date</SelectItem>
+                      <SelectItem value="priority">Priority</SelectItem>
+                      <SelectItem value="name">Name</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
             {/* Task List */}
-            <div className="space-y-4">
+            <div className={`space-y-${isMobileView ? '3' : '4'}`}>
               {filteredAndSortedTasks.length > 0 ? (
                 filteredAndSortedTasks.map((task, index) => (
                   <div 
@@ -297,10 +323,10 @@ const Index = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-16 glass-card rounded-2xl shadow-xl">
-                  <div className="text-6xl mb-4 animate-bounce">🚀</div>
-                  <h3 className="text-xl font-semibold mb-2 text-gradient">No tasks found</h3>
-                  <p className="text-slate-600 dark:text-slate-300">
+                <div className={`text-center py-${isMobileView ? '12' : '16'} glass-card rounded-2xl shadow-xl`}>
+                  <div className={`text-${isMobileView ? '4xl' : '6xl'} mb-4 animate-bounce`}>🚀</div>
+                  <h3 className={`text-${isMobileView ? 'lg' : 'xl'} font-semibold mb-2 text-gradient`}>No tasks found</h3>
+                  <p className={`text-slate-600 dark:text-slate-300 ${isMobileView ? 'text-sm px-4' : ''}`}>
                     {searchQuery || filterBy !== 'all' 
                       ? "Try adjusting your search or filters"
                       : "Create your first task to get started!"
