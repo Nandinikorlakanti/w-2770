@@ -10,7 +10,7 @@ import { saveTasks, loadTasks, saveSettings, loadSettings, clearAllData } from '
 import { isOverdue, isDueToday, isDueTomorrow } from '../utils/taskParser';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, SortAsc, Plus, Mic } from 'lucide-react';
+import { Search, SortAsc, Plus, ListTodo } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
@@ -85,8 +85,8 @@ const Index = () => {
     setTasks(prev => [...newTasks, ...prev]);
     
     toast({
-      title: "Tasks Created from Meeting",
-      description: `${parsedTasks.length} tasks have been added from the meeting transcript.`,
+      title: "Tasks Created",
+      description: `${parsedTasks.length} tasks have been added from the text content.`,
     });
   };
 
@@ -206,8 +206,8 @@ const Index = () => {
                     value="meeting" 
                     className="flex items-center space-x-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400"
                   >
-                    <Mic className="h-4 w-4" />
-                    <span>Meeting</span>
+                    <ListTodo className="h-4 w-4" />
+                    <span>Bulk Tasks</span>
                   </TabsTrigger>
                 </TabsList>
                 
@@ -222,8 +222,6 @@ const Index = () => {
                 <TabsContent value="meeting" className="mt-0">
                   <MeetingMinutesParser
                     onTasksCreate={createTasksFromMeeting}
-                    useAI={useAI}
-                    onToggleAI={setUseAI}
                   />
                 </TabsContent>
               </Tabs>

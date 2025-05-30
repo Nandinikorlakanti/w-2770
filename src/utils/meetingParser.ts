@@ -123,6 +123,7 @@ function parseDeadline(deadline: string): Date | undefined {
 
   if (trimmed.includes('tonight')) {
     const tonight = new Date(now);
+    // Set to today's date with end of day time
     tonight.setHours(23, 59, 59, 999);
     return tonight;
   }
