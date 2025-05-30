@@ -129,7 +129,7 @@
   }
   
   .button-premium {
-    @apply transition-all duration-200 ease-out hover:scale-105 active:scale-98 shadow-lg hover:shadow-xl;
+    @apply transition-all duration-200 ease-out hover:scale-105 active:scale-[0.98] shadow-lg hover:shadow-xl;
   }
   
   .input-premium {
